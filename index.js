@@ -1,15 +1,26 @@
+//  TODO: 
+// 1. работающий шаблон во views 
+// 2. подвязать к нему гугл 
+// 3. подвязать к нему фейсбук
+// 4. подвязать к нему логинку
+
 const express = require('express');
+const http = require('http');  
 const app = express();
 const session = require('express-session');
 const { initialize } = require('passport');
 const passport = require('passport');
 const { response } = require('express');
+const path = require('path');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 require('dotenv').config();
 
 const port = process.env.PORT;
 
-app.set('view engine', 'ejs');
+
+//app.set('view engine', 'ejs');
+app.use(express.static('public'));
+app.use(express.static('/views'));
 
 app.use(session({
     resave: false,
@@ -18,8 +29,13 @@ app.use(session({
 }));
 
 app.get('/', (req, res) => {
-    res.render('../views/auth');
-});
+    res.sendFile(path.join(__dirname, 'views/index.html'))
+  });
+
+  
+// app.get('/', (req, res) => {
+//     res.render('../views/auth');
+// });
 
 //passport
 let userProfile;
@@ -49,8 +65,6 @@ const GOOGLE_CS = process.env.GOOGLE_CLIENT_SECRET;
 passport.use(new GoogleStrategy({
     clientID: GOOGLE_CID,
     clientSecret: GOOGLE_CS,
-    // clientID: '20540020683-cup7gmpv09tpchvnslm7eiv9blphcovo.apps.googleusercontent.com',
-    // clientSecret: 'BzSOb9eDJ3htA5Y4aoBadD0m',
     callbackURL: "http://localhost:3000/auth/google/callback"
   },
   function(accessToken, refreshToken, profile, done) {
